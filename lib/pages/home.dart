@@ -13,19 +13,16 @@ class Home extends StatefulWidget {
 List<Category> mockupCategories = [
   Category(
     id: "1",
-    budget: 200,
     color: "#FF0000",
     name: "Alimentação",
   ),
   Category(
     id: "2",
-    budget: 200,
     color: "#00FF00",
     name: "Transporte",
   ),
   Category(
     id: "3",
-    budget: 200,
     color: "#0000FF",
     name: "Lazer",
   ),
@@ -49,18 +46,21 @@ List<Expense> mockupData = [
     category: mockupCategories[1],
     name: "Uber",
     value: 10,
+    budget: 20,
   ),
   Expense(
     id: "4",
     category: mockupCategories[1],
     name: "Ônibus",
     value: 5,
+    budget: 20,
   ),
   Expense(
     id: "5",
     category: mockupCategories[2],
     name: "Cinema",
     value: 35,
+    budget: 50,
   ),
 ];
 
@@ -109,18 +109,35 @@ class _HomeState extends State<Home> {
                         style: Theme.of(context).textTheme.titleSmall,
                       ),
                     ),
-                    ListView.builder(
-                        shrinkWrap: true,
-                        itemCount: mockupData.length,
-                        itemBuilder: (_, index) => Row(
-                              children: [
-                                Column(
-                                  children: [
-                                    Text(mockupData[index].name!),
-                                  ],
-                                ),
-                              ],
-                            ))
+                    Center(
+                      child: ListView.builder(
+                          shrinkWrap: true,
+                          itemCount: mockupCategories.length,
+                          itemBuilder: (_, index) => Row(
+                                children: [
+                                  Column(
+                                    children: [
+                                      Container(
+                                        width:
+                                            MediaQuery.of(context).size.width *
+                                                .9,
+                                        decoration: BoxDecoration(
+                                          color: Color(int.parse(
+                                              "0xFF${mockupCategories[index].color!.replaceAll('#', '')}")),
+                                        ),
+                                        child: Text(
+                                          mockupCategories[index].name!,
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .headlineSmall,
+                                          textAlign: TextAlign.center,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              )),
+                    )
                   ],
                 ),
               ),
@@ -163,6 +180,9 @@ class _HomeState extends State<Home> {
                                 .reduce((value, element) => value! + element!),
                           ))
                       .toList(),
+                  pieTouchData: PieTouchData(
+                    enabled: true,
+                  ),
                 ),
               ),
             ),
@@ -203,9 +223,9 @@ class _HomeState extends State<Home> {
 
   double get _getPlannedExpenses {
     double total = 0;
-    mockupCategories.forEach((element) {
-      total += element.budget!;
-    });
+    for (Expense e in mockupData) {
+      total += e.budget ?? 0;
+    }
     return total;
   }
 }

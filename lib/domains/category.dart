@@ -4,14 +4,11 @@ class Category {
   String? id;
   String? name;
   String? color;
-  double? budget;
   Category({
     this.id,
     this.name,
     this.color,
-    this.budget,
   });
-  
 
   Category copyWith({
     String? id,
@@ -23,7 +20,6 @@ class Category {
       id: id ?? this.id,
       name: name ?? this.name,
       color: color ?? this.color,
-      budget: budget ?? this.budget,
     );
   }
 
@@ -32,44 +28,35 @@ class Category {
       'id': id,
       'name': name,
       'color': color,
-      'budget': budget,
     };
   }
 
   factory Category.fromMap(Map<String, dynamic> map) {
-    return Category(
-      id: map['id'],
-      name: map['name'],
-      color: map['color'],
-      budget: map['budget']?.toDouble(),
-    );
+    return Category(id: map['id'], name: map['name'], color: map['color']);
   }
 
   String toJson() => json.encode(toMap());
 
-  factory Category.fromJson(String source) => Category.fromMap(json.decode(source));
+  factory Category.fromJson(String source) =>
+      Category.fromMap(json.decode(source));
 
   @override
   String toString() {
-    return 'Category(id: $id, name: $name, color: $color, budget: $budget)';
+    return 'Category(id: $id, name: $name, color: $color)';
   }
 
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
-  
+
     return other is Category &&
-      other.id == id &&
-      other.name == name &&
-      other.color == color &&
-      other.budget == budget;
+        other.id == id &&
+        other.name == name &&
+        other.color == color;
   }
 
   @override
   int get hashCode {
-    return id.hashCode ^
-      name.hashCode ^
-      color.hashCode ^
-      budget.hashCode;
+    return id.hashCode ^ name.hashCode ^ color.hashCode;
   }
 }

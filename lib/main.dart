@@ -38,6 +38,10 @@ ThemeData customTheme = ThemeData(
       color: const Color(0xFF403F4C),
       fontWeight: FontWeight.w600,
     ),
+    headlineSmall: const TextStyle(
+      color: Color(0xFF403F4C),
+      fontSize: 20,
+    ),
     bodyMedium: const TextStyle(
       fontSize: 16,
       color: Color(0xFF403F4C),

@@ -105,6 +105,9 @@ class _SignInPageState extends State<SignInPage> {
                       Button(
                         text: 'Cadastrar',
                         onPressed: () {
+                          if (!formKey.currentState!.validate()) {
+                            return;
+                          }
                           Navigator.of(context).push(
                             MaterialPageRoute(
                               builder: (context) => const Home(),

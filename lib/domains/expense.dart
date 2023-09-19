@@ -7,24 +7,34 @@ class Expense {
   String? name;
   Category? category;
   double? value;
+  double? budget;
+  DateTime? date;
+  
   Expense({
     this.id,
     this.name,
     this.category,
     this.value,
+    this.budget,
+    this.date,
   });
+
 
   Expense copyWith({
     String? id,
     String? name,
     Category? category,
     double? value,
+    double? budget,
+    DateTime? date,
   }) {
     return Expense(
       id: id ?? this.id,
       name: name ?? this.name,
       category: category ?? this.category,
       value: value ?? this.value,
+      budget: budget ?? this.budget,
+      date: date ?? this.date,
     );
   }
 
@@ -34,6 +44,8 @@ class Expense {
       'name': name,
       'category': category?.toMap(),
       'value': value,
+      'budget': budget,
+      'date': date?.millisecondsSinceEpoch,
     };
   }
 
@@ -43,6 +55,8 @@ class Expense {
       name: map['name'],
       category: map['category'] != null ? Category.fromMap(map['category']) : null,
       value: map['value']?.toDouble(),
+      budget: map['budget']?.toDouble(),
+      date: map['date'] != null ? DateTime.fromMillisecondsSinceEpoch(map['date']) : null,
     );
   }
 
@@ -52,7 +66,7 @@ class Expense {
 
   @override
   String toString() {
-    return 'Expense(id: $id, name: $name, category: $category, value: $value)';
+    return 'Expense(id: $id, name: $name, category: $category, value: $value, budget: $budget, date: $date)';
   }
 
   @override
@@ -63,7 +77,9 @@ class Expense {
       other.id == id &&
       other.name == name &&
       other.category == category &&
-      other.value == value;
+      other.value == value &&
+      other.budget == budget &&
+      other.date == date;
   }
 
   @override
@@ -71,6 +87,8 @@ class Expense {
     return id.hashCode ^
       name.hashCode ^
       category.hashCode ^
-      value.hashCode;
+      value.hashCode ^
+      budget.hashCode ^
+      date.hashCode;
   }
 }
