@@ -1,3 +1,4 @@
+import 'package:app/components/expense_card.dart';
 import 'package:app/domains/category.dart';
 import 'package:app/domains/expense.dart';
 import 'package:fl_chart/fl_chart.dart';
@@ -86,6 +87,10 @@ class _HomeState extends State<Home> {
         appBar: AppBar(
           automaticallyImplyLeading: false,
         ),
+        floatingActionButton: FloatingActionButton(
+          child: const Icon(Icons.add),
+          onPressed: () {},
+        ),
         body: CustomScrollView(slivers: [
           SliverList(
             delegate: SliverChildListDelegate([
@@ -104,38 +109,24 @@ class _HomeState extends State<Home> {
                         top: 20,
                       ),
                       child: Text(
-                        "Categorias",
+                        "Histórico",
                         textAlign: TextAlign.start,
                         style: Theme.of(context).textTheme.titleSmall,
                       ),
                     ),
-                    Center(
+                    Padding(
+                      padding: const EdgeInsets.only(
+                        left: 15,
+                        top: 20,
+                      ),
                       child: ListView.builder(
                           shrinkWrap: true,
-                          itemCount: mockupCategories.length,
-                          itemBuilder: (_, index) => Row(
-                                children: [
-                                  Column(
-                                    children: [
-                                      Container(
-                                        width:
-                                            MediaQuery.of(context).size.width *
-                                                .9,
-                                        decoration: BoxDecoration(
-                                          color: Color(int.parse(
-                                              "0xFF${mockupCategories[index].color!.replaceAll('#', '')}")),
-                                        ),
-                                        child: Text(
-                                          mockupCategories[index].name!,
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .headlineSmall,
-                                          textAlign: TextAlign.center,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ],
+                          itemCount: mockupData.length,
+                          itemBuilder: (_, index) => ExpenseCard(
+                                color: Color(int.parse(
+                                    "0xFF${mockupData[index].category!.color!.replaceAll('#', '')}")),
+                                name: mockupData[index].name!,
+                                value: mockupData[index].value!.toString(),
                               )),
                     )
                   ],
