@@ -5,7 +5,7 @@ class ExpenseCard extends StatelessWidget {
   final String name;
   final String value;
 
-  ExpenseCard({
+  const ExpenseCard({
     super.key,
     required this.color,
     required this.name,
