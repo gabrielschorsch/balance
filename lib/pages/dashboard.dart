@@ -87,6 +87,8 @@ class _DashboardState extends State<Dashboard> {
 
   int selectedMonth = DateTime.now().month - 1;
 
+  final ScrollController _controller = ScrollController();
+
   @override
   void initState() {
     super.initState();
@@ -94,6 +96,9 @@ class _DashboardState extends State<Dashboard> {
 
   @override
   Widget build(BuildContext context) {
+    _controller.animateTo(selectedMonth * 80.0 - 160,
+        duration: const Duration(milliseconds: 50), curve: Curves.easeIn);
+
     return Scaffold(
         appBar: AppBar(
           automaticallyImplyLeading: false,
@@ -194,6 +199,7 @@ class _DashboardState extends State<Dashboard> {
         width: MediaQuery.of(context).size.width,
         height: 50,
         child: ListView.builder(
+          controller: _controller,
           shrinkWrap: true,
           itemBuilder: (_, index) {
             return GestureDetector(
