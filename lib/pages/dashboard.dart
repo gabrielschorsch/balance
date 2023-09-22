@@ -102,7 +102,7 @@ class _DashboardState extends State<Dashboard> {
               onPressed: () {},
               icon: const Icon(
                 Icons.filter_list_rounded,
-                size: 48,
+                size: 32,
               ),
             ),
           ],
@@ -188,41 +188,44 @@ class _DashboardState extends State<Dashboard> {
   }
 
   _getMonthsList() {
-    return Container(
-      width: MediaQuery.of(context).size.width,
-      height: 50,
-      child: ListView.builder(
-        shrinkWrap: true,
-        itemBuilder: (_, index) {
-          return GestureDetector(
-            onTap: () {
-              setState(() {
-                selectedMonth = index;
-              });
-            },
-            child: Container(
-              width: 80,
-              height: 50,
-              decoration: BoxDecoration(
-                color: selectedMonth == index
-                    ? Theme.of(context).colorScheme.primary
-                    : Theme.of(context).colorScheme.secondary,
-              ),
-              child: Center(
-                child: Text(
-                  months[index],
-                  style: TextStyle(
-                    color: selectedMonth == index
-                        ? Theme.of(context).colorScheme.onPrimary
-                        : Theme.of(context).colorScheme.onSecondary,
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: SizedBox(
+        width: MediaQuery.of(context).size.width,
+        height: 50,
+        child: ListView.builder(
+          shrinkWrap: true,
+          itemBuilder: (_, index) {
+            return GestureDetector(
+              onTap: () {
+                setState(() {
+                  selectedMonth = index;
+                });
+              },
+              child: Container(
+                width: 80,
+                height: 50,
+                decoration: BoxDecoration(
+                  color: selectedMonth == index
+                      ? Theme.of(context).colorScheme.primary
+                      : Theme.of(context).colorScheme.secondary,
+                ),
+                child: Center(
+                  child: Text(
+                    months[index],
+                    style: TextStyle(
+                      color: selectedMonth == index
+                          ? Theme.of(context).colorScheme.onPrimary
+                          : Theme.of(context).colorScheme.onSecondary,
+                    ),
                   ),
                 ),
               ),
-            ),
-          );
-        },
-        itemCount: 12,
-        scrollDirection: Axis.horizontal,
+            );
+          },
+          itemCount: 12,
+          scrollDirection: Axis.horizontal,
+        ),
       ),
     );
   }
