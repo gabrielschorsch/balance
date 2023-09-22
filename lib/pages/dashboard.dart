@@ -183,27 +183,6 @@ class _DashboardState extends State<Dashboard> {
               ),
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.only(top: 15),
-            child: Row(
-              mainAxisSize: MainAxisSize.max,
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                Column(
-                  children: [
-                    const Text("Gastos"),
-                    Text(_getTotalExpenses.toString()),
-                  ],
-                ),
-                Column(
-                  children: [
-                    const Text("Previsto"),
-                    Text(_getPlannedExpenses.toString()),
-                  ],
-                )
-              ],
-            ),
-          )
         ],
       ),
     );
