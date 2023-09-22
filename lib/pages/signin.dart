@@ -1,4 +1,4 @@
-import 'package:app/pages/home.dart';
+import 'package:app/pages/dashboard.dart';
 import 'package:flutter/material.dart';
 
 class SignInPage extends StatefulWidget {
@@ -110,7 +110,7 @@ class _SignInPageState extends State<SignInPage> {
                           }
                           Navigator.of(context).push(
                             MaterialPageRoute(
-                              builder: (context) => const Home(),
+                              builder: (context) => const Dashboard(),
                             ),
                           );
                         },
