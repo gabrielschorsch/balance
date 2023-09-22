@@ -65,22 +65,33 @@ List<Expense> mockupData = [
   ),
 ];
 
-String? get currentMonth => {
-      1: "Janeiro",
-      2: "Fevereiro",
-      3: "Março",
-      4: "Abril",
-      5: "Maio",
-      6: "Junho",
-      7: "Julho",
-      8: "Agosto",
-      9: "Setembro",
-      10: "Outubro",
-      11: "Novembro",
-      12: "Dezembro",
-    }[DateTime.now().month];
-
 class _DashboardState extends State<Dashboard> {
+  List<String> months = [
+    "Jan",
+    "Fev",
+    "Mar",
+    "Abr",
+    "Mai",
+    "Jun",
+    "Jul",
+    "Ago",
+    "Set",
+    "Out",
+    "Nov",
+    "Dez",
+  ];
+
+  String? get currentMonth {
+    return months[DateTime.now().month - 1];
+  }
+
+  int selectedMonth = DateTime.now().month - 1;
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -99,7 +110,41 @@ class _DashboardState extends State<Dashboard> {
         body: CustomScrollView(slivers: [
           SliverList(
             delegate: SliverChildListDelegate([
-              _buildChartSection(context),
+              SizedBox(
+                width: MediaQuery.of(context).size.width * .8,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _getMonthsList(),
+                    Center(
+                      child: SizedBox(
+                        height: 200,
+                        width: 200,
+                        child: PieChart(
+                          PieChartData(
+                            sections: mockupCategories
+                                .map((e) => PieChartSectionData(
+                                      color: Color(int.parse(
+                                          "0xFF${e.color!.replaceAll('#', '')}")),
+                                      showTitle: false,
+                                      value: mockupData
+                                          .where((element) =>
+                                              element.category?.id == e.id)
+                                          .map((e) => e.value)
+                                          .reduce((value, element) =>
+                                              value! + element!),
+                                    ))
+                                .toList(),
+                            pieTouchData: PieTouchData(
+                              enabled: true,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
               Container(
                 width: MediaQuery.of(context).size.width * .8,
                 decoration: BoxDecoration(
@@ -142,65 +187,43 @@ class _DashboardState extends State<Dashboard> {
         ]));
   }
 
-  Widget _buildChartSection(BuildContext context) {
-    return SizedBox(
-      width: MediaQuery.of(context).size.width * .8,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: const EdgeInsets.only(
-              left: 15,
-            ),
-            child: Text(
-              currentMonth!,
-              style: Theme.of(context).textTheme.titleMedium,
-              textAlign: TextAlign.start,
-            ),
-          ),
-          Center(
-            child: SizedBox(
-              height: 200,
-              width: 200,
-              child: PieChart(
-                PieChartData(
-                  sections: mockupCategories
-                      .map((e) => PieChartSectionData(
-                            color: Color(int.parse(
-                                "0xFF${e.color!.replaceAll('#', '')}")),
-                            showTitle: false,
-                            value: mockupData
-                                .where(
-                                    (element) => element.category?.id == e.id)
-                                .map((e) => e.value)
-                                .reduce((value, element) => value! + element!),
-                          ))
-                      .toList(),
-                  pieTouchData: PieTouchData(
-                    enabled: true,
+  _getMonthsList() {
+    return Container(
+      width: MediaQuery.of(context).size.width,
+      height: 50,
+      child: ListView.builder(
+        shrinkWrap: true,
+        itemBuilder: (_, index) {
+          return GestureDetector(
+            onTap: () {
+              setState(() {
+                selectedMonth = index;
+              });
+            },
+            child: Container(
+              width: 80,
+              height: 50,
+              decoration: BoxDecoration(
+                color: selectedMonth == index
+                    ? Theme.of(context).colorScheme.primary
+                    : Theme.of(context).colorScheme.secondary,
+              ),
+              child: Center(
+                child: Text(
+                  months[index],
+                  style: TextStyle(
+                    color: selectedMonth == index
+                        ? Theme.of(context).colorScheme.onPrimary
+                        : Theme.of(context).colorScheme.onSecondary,
                   ),
                 ),
               ),
             ),
-          ),
-        ],
+          );
+        },
+        itemCount: 12,
+        scrollDirection: Axis.horizontal,
       ),
     );
-  }
-
-  double get _getTotalExpenses {
-    double total = 0;
-    for (var element in mockupData) {
-      total += element.value!;
-    }
-    return total;
-  }
-
-  double get _getPlannedExpenses {
-    double total = 0;
-    for (Expense e in mockupData) {
-      total += e.budget ?? 0;
-    }
-    return total;
   }
 }
