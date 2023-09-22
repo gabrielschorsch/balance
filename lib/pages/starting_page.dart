@@ -8,8 +8,6 @@ class StartingPage extends StatefulWidget {
 }
 
 class _StartingPageState extends State<StartingPage> {
-
-
   @override
   Widget build(BuildContext context) {
     List<Widget> containers = [
@@ -22,18 +20,34 @@ class _StartingPageState extends State<StartingPage> {
       ),
       const ValueContainer(title: "Total planejado:", value: 550),
     ];
-    
+
     return Scaffold(
-      appBar: AppBar(),
+      appBar: AppBar(
+        toolbarHeight: 150,
+        backgroundColor: Theme.of(context).colorScheme.secondary,
+        leading: Padding(
+          padding: const EdgeInsets.all(15.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                "Olá, Gabriel",
+                style: Theme.of(context)
+                    .textTheme
+                    .titleMedium!
+                    .copyWith(color: Colors.white),
+              ),
+            ],
+          ),
+        ),
+        leadingWidth: MediaQuery.of(context).size.width * .8,
+      ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 10),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              "Olá, Gabriel",
-              style: Theme.of(context).textTheme.titleMedium,
-            ),
             ...containers,
           ],
         ),
@@ -45,11 +59,15 @@ class _StartingPageState extends State<StartingPage> {
 class ValueContainer extends StatelessWidget {
   final String title;
   final double value;
+  final Color? titleColor, valueColor, backgroundColor;
 
   const ValueContainer({
     super.key,
     required this.title,
     required this.value,
+    this.titleColor,
+    this.valueColor,
+    this.backgroundColor,
   });
 
   @override
@@ -78,7 +96,8 @@ class ValueContainer extends StatelessWidget {
                     child: Text(
                       title,
                       style: Theme.of(context).textTheme.titleSmall!.copyWith(
-                            color: Theme.of(context).colorScheme.background,
+                            color: titleColor ??
+                                Theme.of(context).colorScheme.background,
                           ),
                       textAlign: TextAlign.start,
                     ),
