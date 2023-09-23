@@ -28,12 +28,12 @@ ThemeData customTheme = ThemeData(
       color: const Color(0xFF7D8CC4),
       fontWeight: FontWeight.w700,
     ),
-    titleMedium: GoogleFonts.koulen(
+    titleMedium: GoogleFonts.kanit(
       fontSize: 32,
       color: const Color(0xFF403F4C),
       fontWeight: FontWeight.w600,
     ),
-    titleSmall: GoogleFonts.koulen(
+    titleSmall: GoogleFonts.kanit(
       fontSize: 24,
       color: const Color(0xFF403F4C),
       fontWeight: FontWeight.w600,
