@@ -53,13 +53,43 @@ class _StartingPageState extends State<StartingPage> {
         leadingWidth: MediaQuery.of(context).size.width * .8,
       ),
       body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 10),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            ...containers,
-          ],
-        ),
+        padding: const EdgeInsets.all(10),
+        child: LayoutBuilder(builder: (context, constraint) {
+          return GridView(
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+              mainAxisExtent: constraint.maxHeight / 2 - 20,
+              crossAxisSpacing: 25,
+              mainAxisSpacing: 15,
+            ),
+            children: [
+              Container(
+                decoration: BoxDecoration(
+                  color: Colors.red,
+                  borderRadius: BorderRadius.circular(20),
+                ),
+              ),
+              Container(
+                decoration: BoxDecoration(
+                  color: Colors.red,
+                  borderRadius: BorderRadius.circular(20),
+                ),
+              ),
+              Container(
+                decoration: BoxDecoration(
+                  color: Colors.red,
+                  borderRadius: BorderRadius.circular(20),
+                ),
+              ),
+              Container(
+                decoration: BoxDecoration(
+                  color: Colors.red,
+                  borderRadius: BorderRadius.circular(20),
+                ),
+              ),
+            ],
+          );
+        }),
       ),
     );
   }
