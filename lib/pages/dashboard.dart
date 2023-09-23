@@ -187,6 +187,73 @@ class _DashboardState extends State<Dashboard> {
         ));
   }
 
+  _buildHistory(BuildContext context) {
+    return Container(
+      width: MediaQuery.of(context).size.width * .8,
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.onPrimary,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(
+              left: 15,
+              top: 20,
+            ),
+            child: Text(
+              "Histórico",
+              textAlign: TextAlign.start,
+              style: Theme.of(context).textTheme.titleSmall,
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(
+              left: 15,
+              top: 20,
+            ),
+            child: ListView.builder(
+                shrinkWrap: true,
+                itemCount: mockupData.length,
+                itemBuilder: (_, index) => ExpenseCard(
+                      color: Color(int.parse(
+                          "0xFF${mockupData[index].category!.color!.replaceAll('#', '')}")),
+                      name: mockupData[index].name!,
+                      value: mockupData[index].value!.toString(),
+                    )),
+          )
+        ],
+      ),
+    );
+  }
+
+  _buildChart() {
+    return Center(
+      child: SizedBox(
+        height: 200,
+        width: 200,
+        child: PieChart(
+          PieChartData(
+            sections: mockupCategories
+                .map((e) => PieChartSectionData(
+                      color: Color(
+                          int.parse("0xFF${e.color!.replaceAll('#', '')}")),
+                      showTitle: false,
+                      value: mockupData
+                          .where((element) => element.category?.id == e.id)
+                          .map((e) => e.value)
+                          .reduce((value, element) => value! + element!),
+                    ))
+                .toList(),
+            pieTouchData: PieTouchData(
+              enabled: true,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
   _getMonthsList() {
     return SizedBox(
       width: MediaQuery.of(context).size.width,
