@@ -1,7 +1,6 @@
 import 'package:app/domains/category.dart';
 import 'package:app/repository/categories_interface.dart';
-
-class CategoriesRepository extends ICategoriesRepository {
+class CategoriesRepository implements ICategoriesRepository {
   @override
   Future<List<Category>> getCategories() {
     List<Category> mockupCategories = [

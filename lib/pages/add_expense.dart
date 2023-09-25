@@ -1,13 +1,29 @@
 import 'package:app/components/button.dart';
+import 'package:app/controllers/category_controller.dart';
+import 'package:app/controllers/expense_controller.dart';
 import 'package:app/domains/category.dart';
-import 'package:app/repository/categories_repository.dart';
+import 'package:app/domains/expense.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class AddExpense extends StatelessWidget {
-  AddExpense({super.key});
+class AddExpense extends StatefulWidget {
+  const AddExpense({super.key});
+
+  @override
+  State<AddExpense> createState() => _AddExpenseState();
+}
+
+class _AddExpenseState extends State<AddExpense> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
+  final TextEditingController _nameController = TextEditingController();
+
+  final TextEditingController _descriptionController = TextEditingController();
+
+  final TextEditingController _valueController = TextEditingController();
+
   final TextEditingController _dateController = TextEditingController();
+  Category? _selectedCategory;
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +38,8 @@ class AddExpense extends StatelessWidget {
         .join("-")
         .replaceAll("-", "/");
     final Future<List<Category>> categories =
-        context.watch<CategoriesRepository>().getCategories();
+        context.watch<CategoryController>().getCategories();
+    final expenseController = context.watch<ExpenseController>();
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: AppBar(),
@@ -45,6 +62,7 @@ class AddExpense extends StatelessWidget {
                 child: Column(
                   children: [
                     TextFormField(
+                      controller: _nameController,
                       decoration: const InputDecoration(
                         labelText: 'Nome',
                       ),
@@ -55,18 +73,22 @@ class AddExpense extends StatelessWidget {
                         return null;
                       },
                     ),
-                    // dropdown
                     Padding(
                       padding: const EdgeInsets.symmetric(vertical: 10.0),
                       child: FutureBuilder<List<Category>>(
                           future: categories,
                           builder: (context, snapshot) {
-                            return DropdownMenu(
+                            return DropdownMenu<Category>(
                               width: MediaQuery.of(context).size.width * .95,
                               label: const Text("Categoria"),
+                              onSelected: (value) {
+                                setState(() {
+                                  _selectedCategory = value;
+                                });
+                              },
                               dropdownMenuEntries: (snapshot.data ??
                                       [] as List<Category>)
-                                  .map((element) => DropdownMenuEntry(
+                                  .map((element) => DropdownMenuEntry<Category>(
                                         style: ButtonStyle(
                                           padding:
                                               const MaterialStatePropertyAll(
@@ -83,13 +105,14 @@ class AddExpense extends StatelessWidget {
                                           ),
                                         ),
                                         label: element.name ?? "",
-                                        value: element.id,
+                                        value: element,
                                       ))
                                   .toList(),
                             );
                           }),
                     ),
                     TextFormField(
+                      controller: _descriptionController,
                       decoration: const InputDecoration(
                         labelText: 'Descrição',
                       ),
@@ -101,6 +124,7 @@ class AddExpense extends StatelessWidget {
                       },
                     ),
                     TextFormField(
+                      controller: _valueController,
                       decoration: const InputDecoration(
                         labelText: 'Valor',
                       ),
@@ -150,8 +174,30 @@ class AddExpense extends StatelessWidget {
                 onFormErrorMessage:
                     "Verifique todos os campos e tente novamente",
                 formKey: _formKey,
-                onPressed: () {
-                  Navigator.of(context).pop();
+                onPressed: () async {
+                  if (!_formKey.currentState!.validate()) {
+                    return;
+                  }
+                  DateTime? date = DateTime.tryParse(
+                      _dateController.value.text.split("/").reversed.join("-"));
+                  DateTime? now = DateTime.now();
+
+                  await expenseController
+                      .addExpense(Expense(
+                        name: _nameController.value.text,
+                        description: _descriptionController.value.text,
+                        value: date!.isBefore(now) || date.isAtSameMomentAs(now)
+                            ? double.tryParse(_valueController.value.text)
+                            : -1,
+                        budget: date.isAfter(now)
+                            ? double.tryParse(_valueController.value.text)
+                            : -1,
+                        date: date,
+                        category: _selectedCategory,
+                      ))
+                      .then(
+                        (value) => Navigator.of(context).pop(),
+                      );
                 }),
           ],
         ),

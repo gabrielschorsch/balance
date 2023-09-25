@@ -37,7 +37,7 @@ class _HomeState extends State<Home> {
           onPressed: () {
             Navigator.of(context).push(
               MaterialPageRoute(
-                builder: (context) => AddExpense(),
+                builder: (context) => const AddExpense(),
                 fullscreenDialog: true,
               ),
             );

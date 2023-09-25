@@ -1,7 +1,7 @@
 import 'package:app/components/expense_card.dart';
+import 'package:app/controllers/category_controller.dart';
+import 'package:app/controllers/expense_controller.dart';
 import 'package:app/domains/category.dart';
-import 'package:app/domains/expense.dart';
-import 'package:app/repository/categories_repository.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -12,42 +12,6 @@ class Dashboard extends StatefulWidget {
   @override
   State<Dashboard> createState() => _DashboardState();
 }
-
-// List<Expense> mockupData = [
-//   Expense(
-//     id: "1",
-//     category: mockupCategories[0],
-//     name: "Almoço",
-//     value: 20,
-//   ),
-//   Expense(
-//     id: "2",
-//     category: mockupCategories[0],
-//     name: "Janta",
-//     value: 20,
-//   ),
-//   Expense(
-//     id: "3",
-//     category: mockupCategories[1],
-//     name: "Uber",
-//     value: 10,
-//     budget: 20,
-//   ),
-//   Expense(
-//     id: "4",
-//     category: mockupCategories[1],
-//     name: "Ônibus",
-//     value: 5,
-//     budget: 20,
-//   ),
-//   Expense(
-//     id: "5",
-//     category: mockupCategories[2],
-//     name: "Cinema",
-//     value: 35,
-//     budget: 50,
-//   ),
-// ];
 
 class _DashboardState extends State<Dashboard> {
   List<String> months = [
@@ -74,15 +38,7 @@ class _DashboardState extends State<Dashboard> {
   final ScrollController _controller = ScrollController();
 
   @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    final Future<List<Category>> categories =
-        context.watch<CategoriesRepository>().getCategories();
-
     _controller.animateTo(selectedMonth * 80.0 - 160,
         duration: const Duration(milliseconds: 500), curve: Curves.easeIn);
 
@@ -97,45 +53,66 @@ class _DashboardState extends State<Dashboard> {
           child: CustomScrollView(slivers: [
             SliverList(
               delegate: SliverChildListDelegate([
-                FutureBuilder(
-                    future: categories,
-                    builder: (context, snapshot) {
-                      return SizedBox(
-                        width: MediaQuery.of(context).size.width * .8,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            //   Center(
-                            //     child: SizedBox(
-                            //       height: 200,
-                            //       width: 200,
-                            //       child: PieChart(
-                            //         PieChartData(
-                            //           sections: (snapshot.data ?? [])
-                            //               .map((e) => PieChartSectionData(
-                            //                     color: Color(int.parse(
-                            //                         "0xFF${e.color!.replaceAll('#', '')}")),
-                            //                     showTitle: false,
-                            //                     value: mockupData
-                            //                         .where((element) =>
-                            //                             element.category?.id ==
-                            //                             e.id)
-                            //                         .map((e) => e.value)
-                            //                         .reduce((value, element) =>
-                            //                             value! + element!),
-                            //                   ))
-                            //               .toList(),
-                            //           pieTouchData: PieTouchData(
-                            //             enabled: true,
-                            //           ),
-                            //         ),
-                            //       ),
-                            //     ),
-                            //   ),
-                          ],
-                        ),
-                      );
-                    }),
+                Consumer<CategoryController>(
+                  builder: (context, categoryController, child) =>
+                      FutureBuilder(
+                          future: categoryController.getCategories(),
+                          builder: (context, snapshot) {
+                            return SizedBox(
+                              width: MediaQuery.of(context).size.width * .8,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Center(
+                                    child: SizedBox(
+                                      height: 200,
+                                      width: 200,
+                                      child: Consumer<ExpenseController>(
+                                        builder: (context, expenseController,
+                                                child) =>
+                                            FutureBuilder(
+                                          future:
+                                              expenseController.getExpenses(),
+                                          builder: (context, expenseSnapshot) {
+                                            return PieChart(
+                                              PieChartData(
+                                                sections: (snapshot.data ?? [])
+                                                    .map(
+                                                      (e) =>
+                                                          PieChartSectionData(
+                                                        color: Color(int.parse(
+                                                            "0xFF${e.color!.replaceAll('#', '')}")),
+                                                        showTitle: false,
+                                                        value: (expenseSnapshot
+                                                                    .data ??
+                                                                [])
+                                                            .where((element) =>
+                                                                element.category
+                                                                    ?.id ==
+                                                                e.id)
+                                                            .map((e) => e.value)
+                                                            .reduce((value,
+                                                                    element) =>
+                                                                value! +
+                                                                element!),
+                                                      ),
+                                                    )
+                                                    .toList(),
+                                                pieTouchData: PieTouchData(
+                                                  enabled: true,
+                                                ),
+                                              ),
+                                            );
+                                          },
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            );
+                          }),
+                ),
                 Container(
                   width: MediaQuery.of(context).size.width * .8,
                   decoration: BoxDecoration(
@@ -155,21 +132,32 @@ class _DashboardState extends State<Dashboard> {
                           style: Theme.of(context).textTheme.titleSmall,
                         ),
                       ),
-                      // Padding(
-                      //   padding: const EdgeInsets.only(
-                      //     left: 15,
-                      //     top: 20,
-                      //   ),
-                      //   child: ListView.builder(
-                      //       shrinkWrap: true,
-                      //       itemCount: mockupData.length,
-                      //       itemBuilder: (_, index) => ExpenseCard(
-                      //             color: Color(int.parse(
-                      //                 "0xFF${mockupData[index].category!.color!.replaceAll('#', '')}")),
-                      //             name: mockupData[index].name!,
-                      //             value: mockupData[index].value!.toString(),
-                      //           )),
-                      // )
+                      Padding(
+                        padding: const EdgeInsets.only(
+                          left: 15,
+                          top: 20,
+                        ),
+                        child: Consumer<ExpenseController>(
+                          builder: (context, expenseController, child) =>
+                              FutureBuilder(
+                                  future: expenseController.getExpenses(),
+                                  builder: (context, expenseSnapshot) {
+                                    return ListView.builder(
+                                        shrinkWrap: true,
+                                        itemCount:
+                                            (expenseSnapshot.data ?? []).length,
+                                        itemBuilder: (_, index) => ExpenseCard(
+                                              color: Color(int.parse(
+                                                  "0xFF${expenseSnapshot.data![index].category!.color!.replaceAll('#', '')}")),
+                                              name: expenseSnapshot
+                                                  .data![index].name!,
+                                              value: expenseSnapshot
+                                                  .data![index].value!
+                                                  .toString(),
+                                            ));
+                                  }),
+                        ),
+                      )
                     ],
                   ),
                 ),
@@ -178,73 +166,6 @@ class _DashboardState extends State<Dashboard> {
           ]),
         ));
   }
-
-  _buildHistory(BuildContext context) {
-    return Container(
-      width: MediaQuery.of(context).size.width * .8,
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.onPrimary,
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: const EdgeInsets.only(
-              left: 15,
-              top: 20,
-            ),
-            child: Text(
-              "Histórico",
-              textAlign: TextAlign.start,
-              style: Theme.of(context).textTheme.titleSmall,
-            ),
-          ),
-          // Padding(
-          //   padding: const EdgeInsets.only(
-          //     left: 15,
-          //     top: 20,
-          //   ),
-          //   child: ListView.builder(
-          //       shrinkWrap: true,
-          //       itemCount: mockupData.length,
-          //       itemBuilder: (_, index) => ExpenseCard(
-          //             color: Color(int.parse(
-          //                 "0xFF${mockupData[index].category!.color!.replaceAll('#', '')}")),
-          //             name: mockupData[index].name!,
-          //             value: mockupData[index].value!.toString(),
-          //           )),
-          // )
-        ],
-      ),
-    );
-  }
-
-  // _buildChart() {
-  //   return Center(
-  //     child: SizedBox(
-  //       height: 200,
-  //       width: 200,
-  //       child: PieChart(
-  //         PieChartData(
-  //           sections: mockupCategories
-  //               .map((e) => PieChartSectionData(
-  //                     color: Color(
-  //                         int.parse("0xFF${e.color!.replaceAll('#', '')}")),
-  //                     showTitle: false,
-  //                     value: mockupData
-  //                         .where((element) => element.category?.id == e.id)
-  //                         .map((e) => e.value)
-  //                         .reduce((value, element) => value! + element!),
-  //                   ))
-  //               .toList(),
-  //           pieTouchData: PieTouchData(
-  //             enabled: true,
-  //           ),
-  //         ),
-  //       ),
-  //     ),
-  //   );
-  // }
 
   _getMonthsList() {
     return SizedBox(
