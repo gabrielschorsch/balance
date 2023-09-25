@@ -90,7 +90,7 @@ class _HomeState extends State<Home> {
                         : Theme.of(context).colorScheme.secondary,
                     child: const Center(
                       child: Icon(
-                        Icons.dashboard,
+                        Icons.history,
                         color: Colors.white,
                       ),
                     ),

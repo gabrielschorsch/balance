@@ -65,7 +65,9 @@ class _DashboardState extends State<Dashboard> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    "Histórico",
+                    selectedMonth + 1 <= DateTime.now().month
+                        ? "Histórico"
+                        : "Planejamento",
                     textAlign: TextAlign.start,
                     style: Theme.of(context).textTheme.titleSmall,
                   ),
@@ -83,25 +85,20 @@ class _DashboardState extends State<Dashboard> {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.only(
-                left: 15,
-                top: 20,
-              ),
+              padding: const EdgeInsets.only(top: 20),
               child: FutureBuilder(
                 future: expenseController.getFilteredExpenses(
                     month: selectedMonth + 1, category: filter),
                 builder: (context, expenseSnapshot) {
                   return ListView.builder(
-                      shrinkWrap: true,
-                      itemCount: (expenseSnapshot.data ?? []).length,
-                      itemBuilder: (_, index) => ExpenseCard(
-                            color: Color(int.parse(
-                                "0xFF${(expenseSnapshot.data ?? [])[index].category!.color!.replaceAll('#', '')}")),
-                            name: (expenseSnapshot.data ?? [])[index].name!,
-                            value: (expenseSnapshot.data ?? [])[index]
-                                .value!
-                                .toString(),
-                          ));
+                    shrinkWrap: true,
+                    itemCount: (expenseSnapshot.data ?? []).length,
+                    itemBuilder: (_, index) => ExpenseCard(
+                      color: Color(int.parse(
+                          "0xFF${(expenseSnapshot.data ?? [])[index].category!.color!.replaceAll('#', '')}")),
+                      expense: (expenseSnapshot.data ?? [])[index],
+                    ),
+                  );
                 },
               ),
             )
