@@ -10,12 +10,6 @@ class StartingPage extends StatefulWidget {
 class _StartingPageState extends State<StartingPage> {
   @override
   Widget build(BuildContext context) {
-    List<Widget> containers = [
-      const SizedBox(
-        height: 20,
-      ),
-    ];
-
     return Scaffold(
       appBar: AppBar(
         toolbarHeight: 400,

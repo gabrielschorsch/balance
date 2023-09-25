@@ -1,3 +1,4 @@
+import 'package:app/pages/add_expense.dart';
 import 'package:app/pages/dashboard.dart';
 import 'package:app/pages/starting_page.dart';
 import 'package:flutter/material.dart';
@@ -33,7 +34,14 @@ class _HomeState extends State<Home> {
         floatingActionButton: FloatingActionButton(
           shape: const CircleBorder(),
           backgroundColor: Theme.of(context).colorScheme.secondary,
-          onPressed: () {},
+          onPressed: () {
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => AddExpense(),
+                fullscreenDialog: true,
+              ),
+            );
+          },
           child: const Icon(Icons.add),
         ),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
