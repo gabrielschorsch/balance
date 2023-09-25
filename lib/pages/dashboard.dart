@@ -92,7 +92,7 @@ class _DashboardState extends State<Dashboard> {
                                   .toList();
                             });
                           },
-                          icon: Icon(Icons.clear),
+                          icon: const Icon(Icons.clear),
                         )
                       : Container(),
                 ],

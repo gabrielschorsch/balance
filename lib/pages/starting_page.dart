@@ -1,3 +1,4 @@
+import 'package:app/pages/add_category.dart';
 import 'package:flutter/material.dart';
 
 class StartingPage extends StatefulWidget {
@@ -57,28 +58,37 @@ class _StartingPageState extends State<StartingPage> {
               mainAxisSpacing: 15,
             ),
             children: [
-              Container(
-                decoration: BoxDecoration(
-                  color: Colors.red,
-                  borderRadius: BorderRadius.circular(20),
-                ),
-              ),
-              Container(
-                decoration: BoxDecoration(
-                  color: Colors.red,
-                  borderRadius: BorderRadius.circular(20),
-                ),
-              ),
-              Container(
-                decoration: BoxDecoration(
-                  color: Colors.red,
-                  borderRadius: BorderRadius.circular(20),
-                ),
-              ),
-              Container(
-                decoration: BoxDecoration(
-                  color: Colors.red,
-                  borderRadius: BorderRadius.circular(20),
+              GestureDetector(
+                onTap: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => const AddCategory(),
+                      fullscreenDialog: true,
+                    ),
+                  );
+                },
+                child: Container(
+                  decoration: BoxDecoration(
+                    border: Border.all(
+                      color: Theme.of(context).colorScheme.secondary,
+                      width: 2,
+                    ),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      const Icon(
+                        Icons.category,
+                        size: 48,
+                      ),
+                      Text(
+                        "Adicionar nova categoria",
+                        style: Theme.of(context).textTheme.headlineSmall,
+                        textAlign: TextAlign.center,
+                      )
+                    ],
+                  ),
                 ),
               ),
             ],

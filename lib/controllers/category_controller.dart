@@ -8,4 +8,10 @@ class CategoryController extends ChangeNotifier {
   Future<List<Category>> getCategories() async {
     return await repository.getCategories();
   }
+
+  Future<int> addCategory(Category category) async {
+    var insert = repository.addCategory(category);
+    notifyListeners();
+    return insert;
+  }
 }
