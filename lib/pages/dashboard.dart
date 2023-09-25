@@ -14,7 +14,7 @@ class Dashboard extends StatefulWidget {
 }
 
 class _DashboardState extends State<Dashboard> {
-  List<String> months = [
+  final List<String> months = [
     "Jan",
     "Fev",
     "Mar",
@@ -28,19 +28,137 @@ class _DashboardState extends State<Dashboard> {
     "Nov",
     "Dez",
   ];
-
   String? get currentMonth {
     return months[DateTime.now().month - 1];
   }
 
   int selectedMonth = DateTime.now().month - 1;
-
   final ScrollController _controller = ScrollController();
+  Category? filter;
 
   @override
   Widget build(BuildContext context) {
     _controller.animateTo(selectedMonth * 80.0 - 160,
         duration: const Duration(milliseconds: 500), curve: Curves.easeIn);
+
+    buildHistory(BuildContext context) {
+      return Container(
+        width: MediaQuery.of(context).size.width * .8,
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.onPrimary,
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(
+                left: 15,
+                top: 20,
+                right: 15,
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    "Histórico",
+                    textAlign: TextAlign.start,
+                    style: Theme.of(context).textTheme.titleSmall,
+                  ),
+                  filter != null
+                      ? IconButton(
+                          onPressed: () {
+                            setState(() {
+                              filter = null;
+                            });
+                          },
+                          icon: Icon(Icons.clear),
+                        )
+                      : Container(),
+                ],
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(
+                left: 15,
+                top: 20,
+              ),
+              child: Consumer<ExpenseController>(
+                builder: (context, expenseController, child) => FutureBuilder(
+                    future: expenseController.getExpenses(),
+                    builder: (context, expenseSnapshot) {
+                      var list = filter != null
+                          ? expenseSnapshot.data!
+                              .where((expense) =>
+                                  expense.category!.id == (filter!.id))
+                              .toList()
+                          : expenseSnapshot.data ?? [];
+                      return ListView.builder(
+                          shrinkWrap: true,
+                          itemCount: list.length,
+                          itemBuilder: (_, index) => ExpenseCard(
+                                color: Color(int.parse(
+                                    "0xFF${list[index].category!.color!.replaceAll('#', '')}")),
+                                name: list[index].name!,
+                                value: list[index].value!.toString(),
+                              ));
+                    }),
+              ),
+            )
+          ],
+        ),
+      );
+    }
+
+    buildChart(BuildContext context, List<Category> categories) {
+      return SizedBox(
+        width: MediaQuery.of(context).size.width * .8,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Center(
+              child: SizedBox(
+                height: 200,
+                width: 200,
+                child: Consumer<ExpenseController>(
+                  builder: (context, expenseController, child) => FutureBuilder(
+                    future: expenseController.getExpenses(),
+                    builder: (context, expenseSnapshot) {
+                      return PieChart(
+                        PieChartData(
+                          sections: expenseSnapshot.data!
+                              .map(
+                                (expense) => PieChartSectionData(
+                                  color: Color(int.parse(
+                                      "0xFF${expense.category!.color!.replaceAll('#', '')}")),
+                                  value: expense.value!.toDouble(),
+                                  showTitle: false,
+                                  // title: expense.category!.name!,
+                                  radius: 50,
+                                ),
+                              )
+                              .toList(),
+                          pieTouchData: PieTouchData(
+                            enabled: true,
+                            touchCallback: (p0, p1) {
+                              var originalList = expenseSnapshot.data!;
+                              var selectedElement = originalList[
+                                  p1!.touchedSection!.touchedSectionIndex];
+                              setState(() {
+                                filter = selectedElement.category;
+                              });
+                            },
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
+    }
 
     return Scaffold(
         appBar: AppBar(
@@ -56,111 +174,13 @@ class _DashboardState extends State<Dashboard> {
                 Consumer<CategoryController>(
                   builder: (context, categoryController, child) =>
                       FutureBuilder(
-                          future: categoryController.getCategories(),
-                          builder: (context, snapshot) {
-                            return SizedBox(
-                              width: MediaQuery.of(context).size.width * .8,
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Center(
-                                    child: SizedBox(
-                                      height: 200,
-                                      width: 200,
-                                      child: Consumer<ExpenseController>(
-                                        builder: (context, expenseController,
-                                                child) =>
-                                            FutureBuilder(
-                                          future:
-                                              expenseController.getExpenses(),
-                                          builder: (context, expenseSnapshot) {
-                                            return PieChart(
-                                              PieChartData(
-                                                sections: (snapshot.data ?? [])
-                                                    .map(
-                                                      (e) =>
-                                                          PieChartSectionData(
-                                                        color: Color(int.parse(
-                                                            "0xFF${e.color!.replaceAll('#', '')}")),
-                                                        showTitle: false,
-                                                        value: (expenseSnapshot
-                                                                    .data ??
-                                                                [])
-                                                            .where((element) =>
-                                                                element.category
-                                                                    ?.id ==
-                                                                e.id)
-                                                            .map((e) => e.value)
-                                                            .reduce((value,
-                                                                    element) =>
-                                                                value! +
-                                                                element!),
-                                                      ),
-                                                    )
-                                                    .toList(),
-                                                pieTouchData: PieTouchData(
-                                                  enabled: true,
-                                                ),
-                                              ),
-                                            );
-                                          },
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            );
-                          }),
-                ),
-                Container(
-                  width: MediaQuery.of(context).size.width * .8,
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.onPrimary,
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.only(
-                          left: 15,
-                          top: 20,
-                        ),
-                        child: Text(
-                          "Histórico",
-                          textAlign: TextAlign.start,
-                          style: Theme.of(context).textTheme.titleSmall,
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(
-                          left: 15,
-                          top: 20,
-                        ),
-                        child: Consumer<ExpenseController>(
-                          builder: (context, expenseController, child) =>
-                              FutureBuilder(
-                                  future: expenseController.getExpenses(),
-                                  builder: (context, expenseSnapshot) {
-                                    return ListView.builder(
-                                        shrinkWrap: true,
-                                        itemCount:
-                                            (expenseSnapshot.data ?? []).length,
-                                        itemBuilder: (_, index) => ExpenseCard(
-                                              color: Color(int.parse(
-                                                  "0xFF${expenseSnapshot.data![index].category!.color!.replaceAll('#', '')}")),
-                                              name: expenseSnapshot
-                                                  .data![index].name!,
-                                              value: expenseSnapshot
-                                                  .data![index].value!
-                                                  .toString(),
-                                            ));
-                                  }),
-                        ),
-                      )
-                    ],
+                    future: categoryController.getCategories(),
+                    builder: (context, snapshot) {
+                      return buildChart(context, snapshot.data ?? []);
+                    },
                   ),
                 ),
+                buildHistory(context),
               ]),
             ),
           ]),

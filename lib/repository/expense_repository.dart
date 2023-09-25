@@ -27,7 +27,7 @@ class ExpenseRepository implements IExpenseRepository {
     Expense(
       id: "3",
       category: Category(
-        id: "1",
+        id: "2",
         name: "Transporte",
         color: "#BA68C8",
       ),
@@ -38,7 +38,7 @@ class ExpenseRepository implements IExpenseRepository {
     Expense(
       id: "4",
       category: Category(
-        id: "1",
+        id: "2",
         name: "Transporte",
         color: "#BA68C8",
       ),
@@ -49,7 +49,7 @@ class ExpenseRepository implements IExpenseRepository {
     Expense(
       id: "5",
       category: Category(
-        id: "1",
+        id: "2",
         name: "Transporte",
         color: "#BA68C8",
       ),
