@@ -58,7 +58,9 @@ class _StartingPageState extends State<StartingPage> {
               mainAxisSpacing: 15,
             ),
             children: [
-              GestureDetector(
+              NavigatorButton(
+                icon: Icons.add_box,
+                text: "Adicionar nova categoria",
                 onTap: () {
                   Navigator.of(context).push(
                     MaterialPageRoute(
@@ -67,33 +69,65 @@ class _StartingPageState extends State<StartingPage> {
                     ),
                   );
                 },
-                child: Container(
-                  decoration: BoxDecoration(
-                    border: Border.all(
-                      color: Theme.of(context).colorScheme.secondary,
-                      width: 2,
-                    ),
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      const Icon(
-                        Icons.category,
-                        size: 48,
-                      ),
-                      Text(
-                        "Adicionar nova categoria",
-                        style: Theme.of(context).textTheme.headlineSmall,
-                        textAlign: TextAlign.center,
-                      )
-                    ],
-                  ),
-                ),
               ),
+              // NavigatorButton(
+              //   onTap: () {
+              //     Navigator.of(context).push(
+              //       MaterialPageRoute(
+              //         builder: (context) => const Placeholder(),
+              //         fullscreenDialog: true,
+              //       ),
+              //     );
+              //   },
+              //   text: "Categorias",
+              //   icon: Icons.category,
+              // )
             ],
           );
         }),
+      ),
+    );
+  }
+}
+
+class NavigatorButton extends StatelessWidget {
+  final Null Function() onTap;
+  final String text;
+  final IconData icon;
+
+  const NavigatorButton({
+    super.key,
+    required this.onTap,
+    required this.text,
+    required this.icon,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        decoration: BoxDecoration(
+          border: Border.all(
+            color: Theme.of(context).colorScheme.secondary,
+            width: 2,
+          ),
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            Icon(
+              icon,
+              size: 48,
+            ),
+            Text(
+              text,
+              style: Theme.of(context).textTheme.headlineSmall,
+              textAlign: TextAlign.center,
+            )
+          ],
+        ),
       ),
     );
   }
