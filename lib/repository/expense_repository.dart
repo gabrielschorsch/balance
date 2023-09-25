@@ -13,6 +13,7 @@ class ExpenseRepository implements IExpenseRepository {
       ),
       name: "Almoço",
       value: 20,
+      date: DateTime.now().subtract(const Duration(days: 5)),
     ),
     Expense(
       id: "2",
@@ -23,6 +24,7 @@ class ExpenseRepository implements IExpenseRepository {
       ),
       name: "Janta",
       value: 20,
+      date: DateTime.now().subtract(const Duration(days: 60)),
     ),
     Expense(
       id: "3",
@@ -34,6 +36,7 @@ class ExpenseRepository implements IExpenseRepository {
       name: "Uber",
       value: 10,
       budget: 20,
+      date: DateTime.now(),
     ),
     Expense(
       id: "4",
@@ -45,6 +48,7 @@ class ExpenseRepository implements IExpenseRepository {
       name: "Ônibus",
       value: 5,
       budget: 20,
+      date: DateTime.now().subtract(const Duration(days: 30)),
     ),
     Expense(
       id: "5",
@@ -56,6 +60,7 @@ class ExpenseRepository implements IExpenseRepository {
       name: "Cinema",
       value: 35,
       budget: 50,
+      date: DateTime.now(),
     ),
   ];
 
