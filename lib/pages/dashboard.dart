@@ -2,6 +2,7 @@ import 'package:app/components/expense_card.dart';
 import 'package:app/controllers/category_controller.dart';
 import 'package:app/controllers/expense_controller.dart';
 import 'package:app/domains/category.dart';
+import 'package:app/domains/expense.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -35,6 +36,21 @@ class _DashboardState extends State<Dashboard> {
   int selectedMonth = DateTime.now().month - 1;
   final ScrollController _controller = ScrollController();
   Category? filter;
+  List<Expense> expenses = [];
+  List<Expense> fullList = [];
+
+  @override
+  void initState() {
+    (Provider.of<ExpenseController>(context, listen: false).getExpenses())
+        .then((value) {
+      fullList = value.toList();
+    });
+
+    super.initState();
+    expenses = fullList
+        .where((element) => element.date!.month == selectedMonth + 1)
+        .toList();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -69,6 +85,11 @@ class _DashboardState extends State<Dashboard> {
                           onPressed: () {
                             setState(() {
                               filter = null;
+
+                              expenses = fullList
+                                  .where((element) =>
+                                      element.date!.month == selectedMonth + 1)
+                                  .toList();
                             });
                           },
                           icon: Icon(Icons.clear),
@@ -86,20 +107,14 @@ class _DashboardState extends State<Dashboard> {
                 builder: (context, expenseController, child) => FutureBuilder(
                     future: expenseController.getExpenses(),
                     builder: (context, expenseSnapshot) {
-                      var list = filter != null
-                          ? expenseSnapshot.data!
-                              .where((expense) =>
-                                  expense.category!.id == (filter!.id))
-                              .toList()
-                          : expenseSnapshot.data ?? [];
                       return ListView.builder(
                           shrinkWrap: true,
-                          itemCount: list.length,
+                          itemCount: expenses.length,
                           itemBuilder: (_, index) => ExpenseCard(
                                 color: Color(int.parse(
-                                    "0xFF${list[index].category!.color!.replaceAll('#', '')}")),
-                                name: list[index].name!,
-                                value: list[index].value!.toString(),
+                                    "0xFF${expenses[index].category!.color!.replaceAll('#', '')}")),
+                                name: expenses[index].name!,
+                                value: expenses[index].value!.toString(),
                               ));
                     }),
               ),
@@ -125,7 +140,7 @@ class _DashboardState extends State<Dashboard> {
                     builder: (context, expenseSnapshot) {
                       return PieChart(
                         PieChartData(
-                          sections: expenseSnapshot.data!
+                          sections: expenses
                               .map(
                                 (expense) => PieChartSectionData(
                                   color: Color(int.parse(
@@ -145,6 +160,14 @@ class _DashboardState extends State<Dashboard> {
                                   p1!.touchedSection!.touchedSectionIndex];
                               setState(() {
                                 filter = selectedElement.category;
+
+                                expenses = expenses
+                                    .where(
+                                      (element) =>
+                                          element.category!.id ==
+                                          selectedElement.category!.id,
+                                    )
+                                    .toList();
                               });
                             },
                           ),
@@ -199,6 +222,11 @@ class _DashboardState extends State<Dashboard> {
             onTap: () {
               setState(() {
                 selectedMonth = index;
+
+                expenses = fullList
+                    .where(
+                        (element) => element.date!.month == selectedMonth + 1)
+                    .toList();
               });
             },
             child: Container(
