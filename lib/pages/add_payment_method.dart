@@ -16,8 +16,18 @@ class _AddPaymentMethodState extends State<AddPaymentMethod> {
   Widget build(BuildContext context) {
     final GlobalKey<FormState> formKey = GlobalKey<FormState>();
     final TextEditingController nameController = TextEditingController();
+    final List<IconData> icons = [
+      Icons.credit_card,
+      Icons.money,
+      Icons.money_off,
+      Icons.card_giftcard,
+      Icons.card_membership,
+      Icons.card_travel,
+    ];
 
     final controller = context.watch<PaymentMethodController>();
+
+    IconData? selectedIcon;
 
     return Scaffold(
       resizeToAvoidBottomInset: false,
@@ -51,7 +61,49 @@ class _AddPaymentMethodState extends State<AddPaymentMethod> {
                         }
                         return null;
                       },
-                    )
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 10.0),
+                      child: DropdownMenu<IconData>(
+                        width: MediaQuery.of(context).size.width * .95,
+                        label: const Text("Ícone"),
+                        onSelected: (value) {
+                          setState(() {
+                            selectedIcon = value;
+                          });
+                        },
+                        dropdownMenuEntries: icons
+                            .map(
+                              (element) => DropdownMenuEntry<IconData>(
+                                  style: ButtonStyle(
+                                    padding: const MaterialStatePropertyAll(
+                                        EdgeInsets.zero),
+                                    alignment: Alignment.centerLeft,
+                                    minimumSize: MaterialStatePropertyAll(
+                                      Size(
+                                        MediaQuery.of(context).size.width * .25,
+                                        50,
+                                      ),
+                                    ),
+                                    maximumSize: MaterialStatePropertyAll(
+                                      Size(
+                                        MediaQuery.of(context).size.width * .25,
+                                        50,
+                                      ),
+                                    ),
+                                  ),
+                                  label: "",
+                                  leadingIcon: Icon(
+                                    element,
+                                    color: selectedIcon == element
+                                        ? Theme.of(context).primaryColor
+                                        : Theme.of(context).iconTheme.color,
+                                  ),
+                                  value: element),
+                            )
+                            .toList(),
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -63,13 +115,14 @@ class _AddPaymentMethodState extends State<AddPaymentMethod> {
                     "Verifique todos os campos e tente novamente",
                 formKey: formKey,
                 onPressed: () async {
-                  if (!formKey.currentState!.validate()) {
+                  if (!formKey.currentState!.validate() ||
+                      selectedIcon == null) {
                     return;
                   }
-
                   await controller
                       .addPaymentMethod(PaymentMethod(
                         name: nameController.value.text,
+                        icon: selectedIcon!.codePoint,
                       ))
                       .then(
                         (value) => Navigator.of(context).pop(),
