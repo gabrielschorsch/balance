@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:app/domains/payment_method.dart';
+
 import 'category.dart';
 
 class Expense {
@@ -29,6 +31,7 @@ class Expense {
     double? value,
     double? budget,
     DateTime? date,
+    PaymentMethod? paymentMethod,
   }) {
     return Expense(
       id: id ?? this.id,
