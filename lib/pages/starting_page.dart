@@ -1,6 +1,7 @@
 import 'package:app/controllers/expense_controller.dart';
 import 'package:app/domains/expense.dart';
 import 'package:app/pages/add_category.dart';
+import 'package:app/pages/add_payment_method.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -97,18 +98,18 @@ class _StartingPageState extends State<StartingPage> {
                   );
                 },
               ),
-              // NavigatorButton(
-              //   onTap: () {
-              //     Navigator.of(context).push(
-              //       MaterialPageRoute(
-              //         builder: (context) => const Placeholder(),
-              //         fullscreenDialog: true,
-              //       ),
-              //     );
-              //   },
-              //   text: "Adicionar forma de",
-              //   icon: Icons.category,
-              // )
+              NavigatorButton(
+                onTap: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => const AddPaymentMethod(),
+                      fullscreenDialog: true,
+                    ),
+                  );
+                },
+                text: "Adicionar forma de pagamento",
+                icon: Icons.credit_card,
+              )
             ],
           );
         }),

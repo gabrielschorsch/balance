@@ -32,7 +32,7 @@ class Button extends StatelessWidget {
       },
       child: Container(
         width: MediaQuery.of(context).size.width * .5,
-        height: MediaQuery.of(context).size.height * .1,
+        height: MediaQuery.of(context).size.height * .075,
         decoration: BoxDecoration(
           color: Theme.of(context).colorScheme.primary,
           borderRadius: BorderRadius.circular(40),
