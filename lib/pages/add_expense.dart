@@ -26,7 +26,7 @@ class _AddExpenseState extends State<AddExpense> {
   Category? _selectedCategory;
 
   @override
-  Widget build(BuildContext context) {
+  void initState() {
     _dateController.value = TextEditingValue(
       text: DateTime.now().toString().split(" ")[0],
     );
@@ -37,6 +37,11 @@ class _AddExpenseState extends State<AddExpense> {
         .reversed
         .join("-")
         .replaceAll("-", "/");
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final Future<List<Category>> categories =
         context.watch<CategoryController>().getCategories();
     final expenseController = context.watch<ExpenseController>();
@@ -151,16 +156,18 @@ class _AddExpenseState extends State<AddExpense> {
                           lastDate: DateTime(DateTime.now().year + 2),
                         );
                         if (pickedDate != null) {
-                          _dateController.value = TextEditingValue(
-                            text: pickedDate.toString().split(" ")[0],
-                          );
-                          _dateController.text = pickedDate
-                              .toString()
-                              .split(" ")[0]
-                              .split("-")
-                              .reversed
-                              .join("-")
-                              .replaceAll("-", "/");
+                          setState(() {
+                            _dateController.value = TextEditingValue(
+                              text: pickedDate.toString().split(" ")[0],
+                            );
+                            _dateController.text = pickedDate
+                                .toString()
+                                .split(" ")[0]
+                                .split("-")
+                                .reversed
+                                .join("-")
+                                .replaceAll("-", "/");
+                          });
                         }
                       },
                     ),
