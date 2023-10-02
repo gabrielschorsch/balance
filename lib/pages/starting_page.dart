@@ -1,5 +1,8 @@
+import 'package:app/controllers/expense_controller.dart';
+import 'package:app/domains/expense.dart';
 import 'package:app/pages/add_category.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class StartingPage extends StatefulWidget {
   const StartingPage({super.key});
@@ -11,39 +14,63 @@ class StartingPage extends StatefulWidget {
 class _StartingPageState extends State<StartingPage> {
   @override
   Widget build(BuildContext context) {
+    final _controller = context.watch<ExpenseController>();
     return Scaffold(
       appBar: AppBar(
         toolbarHeight: 400,
         backgroundColor: Theme.of(context).colorScheme.secondary,
         leading: Padding(
           padding: const EdgeInsets.all(15.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                "Olá, Gabriel",
-                style: Theme.of(context)
-                    .textTheme
-                    .titleMedium!
-                    .copyWith(color: Colors.white),
-              ),
-              ValueContainer(
-                title: "Este mês você gastou:",
-                value: 250,
-                backgroundColor: Theme.of(context).colorScheme.secondary,
-                titleColor: Colors.white,
-                valueColor: Colors.red[200],
-              ),
-              ValueContainer(
-                title: "Valor planejado:",
-                value: 550,
-                backgroundColor: Theme.of(context).colorScheme.secondary,
-                titleColor: Colors.white,
-                valueColor: Colors.green[200],
-              ),
-            ],
-          ),
+          child: FutureBuilder<List<Expense>>(
+              future: _controller.getExpenses(),
+              builder: (context, snapshot) {
+                return Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "Olá, Gabriel",
+                      style: Theme.of(context)
+                          .textTheme
+                          .titleMedium!
+                          .copyWith(color: Colors.white),
+                    ),
+                    ValueContainer(
+                      title: "Este mês você gastou:",
+                      value: (snapshot.data ?? [])
+                          .where((element) =>
+                              element.date!.month == DateTime.now().month)
+                          .toList()
+                          .fold<double>(
+                            0,
+                            (previousValue, element) =>
+                                previousValue +
+                                (element.value! > 0 ? element.value! : 0),
+                          ),
+                      backgroundColor: Theme.of(context).colorScheme.secondary,
+                      titleColor: Colors.white,
+                      valueColor: Colors.red[200],
+                    ),
+                    ValueContainer(
+                      title: "Valor planejado:",
+                      value: (snapshot.data ?? [])
+                          .where((element) =>
+                              element.date!.month == DateTime.now().month)
+                          .toList()
+                          .fold<double>(
+                              0,
+                              (previousValue, element) =>
+                                  previousValue +
+                                  ((element.budget ?? 0) > 0
+                                      ? element.budget!
+                                      : 0)),
+                      backgroundColor: Theme.of(context).colorScheme.secondary,
+                      titleColor: Colors.white,
+                      valueColor: Colors.green[200],
+                    ),
+                  ],
+                );
+              }),
         ),
         leadingWidth: MediaQuery.of(context).size.width * .8,
       ),
@@ -79,7 +106,7 @@ class _StartingPageState extends State<StartingPage> {
               //       ),
               //     );
               //   },
-              //   text: "Categorias",
+              //   text: "Adicionar forma de",
               //   icon: Icons.category,
               // )
             ],
