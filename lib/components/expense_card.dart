@@ -70,16 +70,14 @@ class ExpenseCard extends StatelessWidget {
                     ],
                   ),
                 ),
-                // Expanded(
-                //   flex: 1,
-                //   child: IconButton(
-                //     onPressed: () {},
-                //     icon: Icon(
-                //       Icons.edit,
-                //       color: Colors.grey[50],
-                //     ),
-                //   ),
-                // )
+                Expanded(
+                    flex: 1,
+                    child: Icon(
+                      expense.paymentMethod != null
+                          ? IconData(expense.paymentMethod!.icon!,
+                              fontFamily: 'MaterialIcons')
+                          : Icons.question_mark,
+                    ))
               ],
             ),
           ),

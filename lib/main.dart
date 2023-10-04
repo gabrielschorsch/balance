@@ -51,6 +51,12 @@ ThemeData customTheme = ThemeData(
       color: Color(0xFF403F4C),
     ),
   ),
+  inputDecorationTheme: const InputDecorationTheme(
+    hintStyle: TextStyle(
+      color: Color(0xFF403F4C),
+      fontSize: 16,
+    ),
+  ),
 );
 
 class MyApp extends StatelessWidget {

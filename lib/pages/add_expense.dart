@@ -1,10 +1,14 @@
 import 'package:app/components/button.dart';
 import 'package:app/controllers/category_controller.dart';
 import 'package:app/controllers/expense_controller.dart';
+import 'package:app/controllers/payment_method_controller.dart';
 import 'package:app/domains/category.dart';
 import 'package:app/domains/expense.dart';
+import 'package:app/domains/payment_method.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
+import 'package:dropdown_button2/dropdown_button2.dart';
 
 class AddExpense extends StatefulWidget {
   const AddExpense({super.key});
@@ -24,6 +28,7 @@ class _AddExpenseState extends State<AddExpense> {
 
   final TextEditingController _dateController = TextEditingController();
   Category? _selectedCategory;
+  PaymentMethod? _selectedPaymentMethod;
 
   @override
   void initState() {
@@ -44,6 +49,8 @@ class _AddExpenseState extends State<AddExpense> {
   Widget build(BuildContext context) {
     final Future<List<Category>> categories =
         context.watch<CategoryController>().getCategories();
+    final paymentMethods =
+        context.watch<PaymentMethodController>().getPaymentMethods();
     final expenseController = context.watch<ExpenseController>();
     return Scaffold(
       resizeToAvoidBottomInset: false,
@@ -83,36 +90,86 @@ class _AddExpenseState extends State<AddExpense> {
                       child: FutureBuilder<List<Category>>(
                           future: categories,
                           builder: (context, snapshot) {
-                            return DropdownMenu<Category>(
-                              width: MediaQuery.of(context).size.width * .95,
-                              label: const Text("Categoria"),
-                              onSelected: (value) {
-                                setState(() {
-                                  _selectedCategory = value;
-                                });
-                              },
-                              dropdownMenuEntries: (snapshot.data ??
-                                      [] as List<Category>)
-                                  .map((element) => DropdownMenuEntry<Category>(
-                                        style: ButtonStyle(
-                                          padding:
-                                              const MaterialStatePropertyAll(
-                                                  EdgeInsets.zero),
-                                          alignment: Alignment.centerLeft,
-                                          minimumSize: MaterialStatePropertyAll(
-                                            Size(
-                                              MediaQuery.of(context)
-                                                      .size
-                                                      .width *
-                                                  .95,
-                                              50,
-                                            ),
+                            return DropdownButtonHideUnderline(
+                              child: DropdownButton2(
+                                isExpanded: true,
+                                value: _selectedCategory,
+                                onChanged: (value) {
+                                  setState(() {
+                                    _selectedCategory = value as Category;
+                                  });
+                                },
+                                hint: const Text(
+                                  "Categorias",
+                                  style: TextStyle(
+                                    color: Colors.grey,
+                                    fontSize: 16,
+                                  ),
+                                ),
+                                items: (snapshot.data ?? []).map((element) {
+                                  return DropdownMenuItem(
+                                    value: element,
+                                    child: Text(
+                                      element.name ?? "",
+                                      style: GoogleFonts.roboto(
+                                        color: Colors.black,
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.normal,
+                                      ),
+                                    ),
+                                  );
+                                }).toList(),
+                              ),
+                            );
+                          }),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 10.0),
+                      child: FutureBuilder<List<PaymentMethod>>(
+                          future: paymentMethods,
+                          builder: (context, snapshot) {
+                            return DropdownButtonHideUnderline(
+                              child: DropdownButton2(
+                                isExpanded: true,
+                                value: _selectedPaymentMethod,
+                                onChanged: (value) {
+                                  setState(() {
+                                    _selectedPaymentMethod =
+                                        value as PaymentMethod;
+                                  });
+                                },
+                                hint: const Text(
+                                  "Formas de pagamento",
+                                  style: TextStyle(
+                                    color: Colors.grey,
+                                    fontSize: 16,
+                                  ),
+                                ),
+                                items: snapshot.data!.map((element) {
+                                  return DropdownMenuItem(
+                                    value: element,
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      children: [
+                                        Icon(
+                                          IconData(element.icon!,
+                                              fontFamily: "MaterialIcons"),
+                                        ),
+                                        const SizedBox(width: 30),
+                                        Text(
+                                          element.name ?? "",
+                                          style: GoogleFonts.roboto(
+                                            color: Colors.black,
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.normal,
                                           ),
                                         ),
-                                        label: element.name ?? "",
-                                        value: element,
-                                      ))
-                                  .toList(),
+                                      ],
+                                    ),
+                                  );
+                                }).toList(),
+                              ),
                             );
                           }),
                     ),
@@ -201,6 +258,7 @@ class _AddExpenseState extends State<AddExpense> {
                             : -1,
                         date: date,
                         category: _selectedCategory,
+                        paymentMethod: _selectedPaymentMethod
                       ))
                       .then(
                         (value) => Navigator.of(context).pop(),
