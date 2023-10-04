@@ -1,4 +1,5 @@
 import 'package:app/components/button.dart';
+import 'package:app/components/icon_dropdown.dart';
 import 'package:app/controllers/payment_method_controller.dart';
 import 'package:app/domains/payment_method.dart';
 import 'package:flutter/material.dart';
@@ -27,7 +28,7 @@ class _AddPaymentMethodState extends State<AddPaymentMethod> {
 
     final controller = context.watch<PaymentMethodController>();
 
-    IconData? selectedIcon;
+    ValueNotifier<IconData?> selectedIcon = ValueNotifier(null);
 
     return Scaffold(
       resizeToAvoidBottomInset: false,
@@ -46,86 +47,55 @@ class _AddPaymentMethodState extends State<AddPaymentMethod> {
             ),
             Expanded(
               flex: 7,
-              child: Form(
-                key: formKey,
-                child: Column(
-                  children: [
-                    TextFormField(
-                      controller: nameController,
-                      decoration: const InputDecoration(
-                        labelText: 'Nome',
+              child: ValueListenableBuilder(
+                  valueListenable: selectedIcon,
+                  builder: (context, value, child) {
+                    return Form(
+                      key: formKey,
+                      child: Column(
+                        children: [
+                          TextFormField(
+                            controller: nameController,
+                            decoration: const InputDecoration(
+                              labelText: 'Nome',
+                            ),
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Please enter a title';
+                              }
+                              return null;
+                            },
+                          ),
+                          IconDropdown(
+                            hint: "Ícone",
+                            icons: icons,
+                            value: value,
+                            onSelected: (value) {
+                              selectedIcon.value = value;
+                            },
+                          ),
+                        ],
                       ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter a title';
-                        }
-                        return null;
-                      },
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 10.0),
-                      child: DropdownMenu<IconData>(
-                        width: MediaQuery.of(context).size.width * .95,
-                        label: const Text("Ícone"),
-                        onSelected: (value) {
-                          setState(() {
-                            selectedIcon = value;
-                          });
-                        },
-                        dropdownMenuEntries: icons
-                            .map(
-                              (element) => DropdownMenuEntry<IconData>(
-                                  style: ButtonStyle(
-                                    padding: const MaterialStatePropertyAll(
-                                        EdgeInsets.zero),
-                                    alignment: Alignment.centerLeft,
-                                    minimumSize: MaterialStatePropertyAll(
-                                      Size(
-                                        MediaQuery.of(context).size.width * .25,
-                                        50,
-                                      ),
-                                    ),
-                                    maximumSize: MaterialStatePropertyAll(
-                                      Size(
-                                        MediaQuery.of(context).size.width * .25,
-                                        50,
-                                      ),
-                                    ),
-                                  ),
-                                  label: "",
-                                  leadingIcon: Icon(
-                                    element,
-                                    color: selectedIcon == element
-                                        ? Theme.of(context).primaryColor
-                                        : Theme.of(context).iconTheme.color,
-                                  ),
-                                  value: element),
-                            )
-                            .toList(),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+                    );
+                  }),
             ),
             Button(
-                // formKey: _formKey,
                 title: "Adicionar",
                 onFormErrorMessage:
                     "Verifique todos os campos e tente novamente",
                 formKey: formKey,
-                onPressed: () async {
+                onPressed: () {
                   if (!formKey.currentState!.validate() ||
-                      selectedIcon == null) {
+                      selectedIcon.value == null) {
                     return;
                   }
-                  await controller
+                  controller
                       .addPaymentMethod(PaymentMethod(
                         name: nameController.value.text,
-                        icon: selectedIcon!.codePoint,
+                        icon: selectedIcon.value!.codePoint,
                       ))
                       .then(
-                        (value) => Navigator.of(context).pop(),
+                        (_) => Navigator.of(context).pop(),
                       );
                 }),
           ],
