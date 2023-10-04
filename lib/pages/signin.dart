@@ -1,8 +1,6 @@
 import 'package:app/controllers/auth_controller.dart';
-import 'package:app/pages/dashboard.dart';
 import 'package:app/pages/home.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 class SignInPage extends StatefulWidget {

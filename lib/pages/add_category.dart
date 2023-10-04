@@ -39,7 +39,7 @@ class _AddCategoryState extends State<AddCategory> {
 
   @override
   Widget build(BuildContext context) {
-    final _categoriesController = context.watch<CategoryController>();
+    final categoriesController = context.watch<CategoryController>();
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: AppBar(),
@@ -137,7 +137,7 @@ class _AddCategoryState extends State<AddCategory> {
                   if (!_formKey.currentState!.validate()) {
                     return;
                   }
-                  await _categoriesController
+                  await categoriesController
                       .addCategory(Category(
                     name: _nameController.text,
                     color: selectedColor,

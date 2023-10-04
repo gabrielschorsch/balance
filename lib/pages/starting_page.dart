@@ -16,7 +16,7 @@ class StartingPage extends StatefulWidget {
 class _StartingPageState extends State<StartingPage> {
   @override
   Widget build(BuildContext context) {
-    final _controller = context.watch<ExpenseController>();
+    final controller = context.watch<ExpenseController>();
 
     return Scaffold(
       appBar: AppBar(
@@ -25,7 +25,7 @@ class _StartingPageState extends State<StartingPage> {
         leading: Padding(
           padding: const EdgeInsets.all(15.0),
           child: FutureBuilder<List<Expense>>(
-              future: _controller.getExpenses(),
+              future: controller.getExpenses(),
               builder: (context, snapshot) {
                 return Column(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,

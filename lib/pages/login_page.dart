@@ -1,6 +1,8 @@
+import 'package:app/controllers/auth_controller.dart';
 import 'package:app/pages/home.dart';
 import 'package:app/pages/signin.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class LoginPage extends StatelessWidget {
   const LoginPage({super.key});
@@ -8,6 +10,8 @@ class LoginPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final formKey = GlobalKey<FormState>();
+    final emailController = TextEditingController();
+    final passwordController = TextEditingController();
 
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.background,
@@ -30,10 +34,11 @@ class LoginPage extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
                       TextFormField(
+                        controller: emailController,
                         autovalidateMode: AutovalidateMode.onUserInteraction,
                         validator: (value) {
                           if (value == null || value.isEmpty) {
-                            return "O nome de usuário não pode ser vazio";
+                            return "O e-mail não pode ser vazio";
                           }
                           return null;
                         },
@@ -44,7 +49,7 @@ class LoginPage extends StatelessWidget {
                               width: 2,
                             ),
                           ),
-                          labelText: "Username",
+                          labelText: "E-mail",
                           prefixIcon: Icon(
                             Icons.person,
                             color: Theme.of(context).colorScheme.secondary,
@@ -52,6 +57,7 @@ class LoginPage extends StatelessWidget {
                         ),
                       ),
                       TextFormField(
+                        controller: passwordController,
                         autovalidateMode: AutovalidateMode.onUserInteraction,
                         obscureText: true,
                         validator: (value) {
@@ -74,13 +80,28 @@ class LoginPage extends StatelessWidget {
                       const SizedBox(height: 50),
                       Button(
                         text: 'Login',
-                        onPressed: () {
+                        onPressed: () async {
                           if (formKey.currentState!.validate()) {
-                            Navigator.of(context).pushReplacement(
-                              MaterialPageRoute(
-                                builder: (context) => const Home(),
-                              ),
-                            );
+                            var logged =
+                                await context.read<AuthController>().login(
+                                      emailController.text,
+                                      passwordController.text,
+                                    );
+                            if (logged) {
+                              Navigator.of(context).pushReplacement(
+                                MaterialPageRoute(
+                                  builder: (context) => const Home(),
+                                ),
+                              );
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(
+                                    "E-mail ou senha incorretos",
+                                  ),
+                                ),
+                              );
+                            }
                           }
                         },
                       ),
