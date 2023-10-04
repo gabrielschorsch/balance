@@ -2,6 +2,7 @@ import 'package:app/controllers/expense_controller.dart';
 import 'package:app/domains/expense.dart';
 import 'package:app/pages/add_category.dart';
 import 'package:app/pages/add_payment_method.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -16,6 +17,7 @@ class _StartingPageState extends State<StartingPage> {
   @override
   Widget build(BuildContext context) {
     final _controller = context.watch<ExpenseController>();
+
     return Scaffold(
       appBar: AppBar(
         toolbarHeight: 400,
@@ -30,7 +32,7 @@ class _StartingPageState extends State<StartingPage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      "Olá, Gabriel",
+                      "Olá, ${FirebaseAuth.instance.currentUser!.displayName}",
                       style: Theme.of(context)
                           .textTheme
                           .titleMedium!

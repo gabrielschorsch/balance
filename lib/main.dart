@@ -1,7 +1,10 @@
+import 'package:app/controllers/auth_controller.dart';
 import 'package:app/controllers/category_controller.dart';
 import 'package:app/controllers/expense_controller.dart';
 import 'package:app/controllers/payment_method_controller.dart';
+import 'package:app/pages/home.dart';
 import 'package:app/pages/login_page.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
@@ -11,10 +14,12 @@ import 'firebase_options.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
-    name: 'testing',
     options: DefaultFirebaseOptions.currentPlatform,
-  );
-  runApp(const MyApp());
+  ).then((_) {
+    // FirebaseAuth.instance.signOut().then((_) {
+    runApp(const MyApp());
+    // });
+  });
 }
 
 ThemeData customTheme = ThemeData(
@@ -72,24 +77,31 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MultiProvider(
-      providers: [
-        ChangeNotifierProvider<CategoryController>(
-          create: (context) => CategoryController(),
-        ),
-        ChangeNotifierProvider<ExpenseController>(
-          create: (context) => ExpenseController(),
-        ),
-        ChangeNotifierProvider<PaymentMethodController>(
-          create: (context) => PaymentMethodController(),
-        ),
-      ],
-      child: MaterialApp(
-        title: 'Flutter Demo',
-        theme: customTheme,
-        debugShowCheckedModeBanner: false,
-        home: const LoginPage(),
-      ),
-    );
+    return StreamBuilder<User?>(
+        stream: FirebaseAuth.instance.authStateChanges(),
+        builder: (context, snapshot) {
+          return MultiProvider(
+            providers: [
+              ChangeNotifierProvider<CategoryController>(
+                create: (context) => CategoryController(),
+              ),
+              ChangeNotifierProvider<ExpenseController>(
+                create: (context) => ExpenseController(),
+              ),
+              ChangeNotifierProvider<PaymentMethodController>(
+                create: (context) => PaymentMethodController(),
+              ),
+              Provider<AuthController>(
+                create: (context) => AuthController(),
+              ),
+            ],
+            child: MaterialApp(
+              title: 'Flutter Demo',
+              theme: customTheme,
+              debugShowCheckedModeBanner: false,
+              home: snapshot.hasData ? const Home() : const LoginPage(),
+            ),
+          );
+        });
   }
 }

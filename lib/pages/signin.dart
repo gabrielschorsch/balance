@@ -1,5 +1,9 @@
+import 'package:app/controllers/auth_controller.dart';
 import 'package:app/pages/dashboard.dart';
+import 'package:app/pages/home.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 
 class SignInPage extends StatefulWidget {
   const SignInPage({super.key});
@@ -12,11 +16,14 @@ class _SignInPageState extends State<SignInPage> {
   @override
   Widget build(BuildContext context) {
     final formKey = GlobalKey<FormState>();
-    String? username;
-    String? password;
-    String? confirmPassword;
+    final TextEditingController nameController = TextEditingController();
+    final TextEditingController emailController = TextEditingController();
+    final TextEditingController passwordController = TextEditingController();
+    final TextEditingController confirmPasswordController =
+        TextEditingController();
 
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       backgroundColor: Theme.of(context).colorScheme.background,
       body: Padding(
         padding: const EdgeInsets.symmetric(vertical: 50),
@@ -37,16 +44,14 @@ class _SignInPageState extends State<SignInPage> {
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
                       TextFormField(
-                        autovalidateMode: AutovalidateMode.onUserInteraction,
-                        onChanged: (value) => setState(() {
-                          username = value;
-                        }),
+                        controller: nameController,
                         validator: (value) {
                           if (value == null || value.isEmpty) {
-                            return "O nome de usuário não pode ser vazio";
+                            return "O nome não pode ser vazio";
                           }
                           return null;
                         },
+                        keyboardType: TextInputType.name,
                         decoration: InputDecoration(
                           border: const UnderlineInputBorder(
                             borderSide: BorderSide(
@@ -54,7 +59,7 @@ class _SignInPageState extends State<SignInPage> {
                               width: 2,
                             ),
                           ),
-                          labelText: "Username",
+                          labelText: "Nome",
                           prefixIcon: Icon(
                             Icons.person,
                             color: Theme.of(context).colorScheme.secondary,
@@ -62,10 +67,30 @@ class _SignInPageState extends State<SignInPage> {
                         ),
                       ),
                       TextFormField(
-                        autovalidateMode: AutovalidateMode.onUserInteraction,
-                        onChanged: (value) => setState(() {
-                          password = value;
-                        }),
+                        controller: emailController,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return "O e-mail não pode ser vazio";
+                          }
+                          return null;
+                        },
+                        keyboardType: TextInputType.emailAddress,
+                        decoration: InputDecoration(
+                          border: const UnderlineInputBorder(
+                            borderSide: BorderSide(
+                              color: Colors.red,
+                              width: 2,
+                            ),
+                          ),
+                          labelText: "E-mail",
+                          prefixIcon: Icon(
+                            Icons.person,
+                            color: Theme.of(context).colorScheme.secondary,
+                          ),
+                        ),
+                      ),
+                      TextFormField(
+                        controller: passwordController,
                         obscureText: true,
                         validator: (value) {
                           if (value == null || value.isEmpty) {
@@ -85,10 +110,10 @@ class _SignInPageState extends State<SignInPage> {
                         ),
                       ),
                       TextFormField(
-                        autovalidateMode: AutovalidateMode.onUserInteraction,
+                        controller: confirmPasswordController,
                         obscureText: true,
                         validator: (value) {
-                          if (value != password) {
+                          if (value != passwordController.text) {
                             return "As senhas não coincidem";
                           }
                           return null;
@@ -104,15 +129,25 @@ class _SignInPageState extends State<SignInPage> {
                       const SizedBox(height: 50),
                       Button(
                         text: 'Cadastrar',
-                        onPressed: () {
+                        onPressed: () async {
                           if (!formKey.currentState!.validate()) {
                             return;
                           }
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (context) => const Dashboard(),
-                            ),
-                          );
+                          await context
+                              .read<AuthController>()
+                              .register(
+                                nameController.text,
+                                emailController.text,
+                                passwordController.text,
+                              )
+                              .then((value) => {
+                                    Navigator.pushReplacement(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => const Home(),
+                                      ),
+                                    ),
+                                  });
                         },
                       ),
                     ],
