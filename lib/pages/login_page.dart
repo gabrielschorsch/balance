@@ -94,8 +94,9 @@ class LoginPage extends StatelessWidget {
                                 ),
                               );
                             } else {
+                              // ignore: use_build_context_synchronously
                               ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
+                                const SnackBar(
                                   content: Text(
                                     "E-mail ou senha incorretos",
                                   ),
