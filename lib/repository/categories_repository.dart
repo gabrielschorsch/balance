@@ -1,37 +1,35 @@
 import 'package:app/domains/category.dart';
 import 'package:app/repository/categories_interface.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class CategoriesRepository implements ICategoriesRepository {
-  static List<Category> mockup = [
-    Category(
-      id: "1",
-      //pastel magenta
-      color: "#FFB6C1",
-      name: "Alimentação",
-    ),
-    Category(
-      id: "2",
-      //pastel green
-      color: "#98FB98",
-      name: "Transporte",
-    ),
-    Category(
-      id: "3",
-      //pastel blue
-      color: "#ADD8E6",
-      name: "Lazer",
-    ),
-  ];
-
+  static var db = FirebaseFirestore.instance;
   @override
-  Future<List<Category>> getCategories() {
-    //mocking categories =
-    return Future.value(mockup);
+  Future<List<Category>> getCategories() async {
+    var userId = FirebaseAuth.instance.currentUser!.uid;
+    return db
+        .collection("categories")
+        .where("userId", isEqualTo: userId)
+        .get()
+        .then((value) {
+      return value.docs.map((e) => Category.fromMap(e.data())).toList();
+    });
   }
 
   @override
-  Future<int> addCategory(Category category) {
-    mockup.add(category);
+  Future<int> addCategory(Category category) async {
+    var userId = FirebaseAuth.instance.currentUser!.uid;
+
+    var post = category.toMap();
+
+    post.addEntries(
+      [
+        MapEntry("userId", userId),
+      ],
+    );
+
+    await db.collection("categories").add(post);
     return Future.value(1);
   }
 }
