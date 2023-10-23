@@ -5,12 +5,12 @@ import 'package:firebase_auth/firebase_auth.dart';
 
 class CategoriesRepository implements ICategoriesRepository {
   static var db = FirebaseFirestore.instance;
-  final String COLLECTION = "categories";
+  final String collection = "categories";
   @override
   Future<List<Category>> getCategories() async {
     var userId = FirebaseAuth.instance.currentUser!.uid;
     return db
-        .collection(COLLECTION)
+        .collection(collection)
         .where("userId", isEqualTo: userId)
         .get()
         .then((value) {
@@ -22,6 +22,16 @@ class CategoriesRepository implements ICategoriesRepository {
   Future<int> addCategory(Category category) async {
     var userId = FirebaseAuth.instance.currentUser!.uid;
 
+    var exists = await db
+        .collection(collection)
+        .where("name", isEqualTo: category.name)
+        .where("userId", isEqualTo: userId)
+        .get();
+
+    if (exists.docs.isNotEmpty) {
+      return Future.value(0);
+    }
+
     var post = category.toMap();
 
     post.addEntries(
@@ -30,7 +40,7 @@ class CategoriesRepository implements ICategoriesRepository {
       ],
     );
 
-    await db.collection(COLLECTION).add(post);
+    await db.collection(collection).add(post);
     return Future.value(1);
   }
 }

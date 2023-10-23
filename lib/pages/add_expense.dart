@@ -90,37 +90,42 @@ class _AddExpenseState extends State<AddExpense> {
                       child: FutureBuilder<List<Category>>(
                           future: categories,
                           builder: (context, snapshot) {
-                            return DropdownButtonHideUnderline(
-                              child: DropdownButton2(
-                                isExpanded: true,
-                                value: _selectedCategory,
-                                onChanged: (value) {
-                                  setState(() {
-                                    _selectedCategory = value as Category;
-                                  });
-                                },
-                                hint: const Text(
-                                  "Categorias",
-                                  style: TextStyle(
-                                    color: Colors.grey,
-                                    fontSize: 16,
-                                  ),
-                                ),
-                                items: (snapshot.data ?? []).map((element) {
-                                  return DropdownMenuItem(
-                                    value: element,
-                                    child: Text(
-                                      element.name ?? "",
-                                      style: GoogleFonts.roboto(
-                                        color: Colors.black,
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.normal,
-                                      ),
+                            if (snapshot.connectionState ==
+                                    ConnectionState.done ||
+                                snapshot.hasData) {
+                              return DropdownButtonHideUnderline(
+                                child: DropdownButton2(
+                                  isExpanded: true,
+                                  value: _selectedCategory,
+                                  onChanged: (value) {
+                                    setState(() {
+                                      _selectedCategory = value as Category;
+                                    });
+                                  },
+                                  hint: const Text(
+                                    "Categorias",
+                                    style: TextStyle(
+                                      color: Colors.grey,
+                                      fontSize: 16,
                                     ),
-                                  );
-                                }).toList(),
-                              ),
-                            );
+                                  ),
+                                  items: (snapshot.data ?? []).map((element) {
+                                    return DropdownMenuItem(
+                                      value: element,
+                                      child: Text(
+                                        element.name ?? "",
+                                        style: GoogleFonts.roboto(
+                                          color: Colors.black,
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.normal,
+                                        ),
+                                      ),
+                                    );
+                                  }).toList(),
+                                ),
+                              );
+                            }
+                            return CircularProgressIndicator();
                           }),
                     ),
                     Padding(
@@ -128,49 +133,54 @@ class _AddExpenseState extends State<AddExpense> {
                       child: FutureBuilder<List<PaymentMethod>>(
                           future: paymentMethods,
                           builder: (context, snapshot) {
-                            return DropdownButtonHideUnderline(
-                              child: DropdownButton2(
-                                isExpanded: true,
-                                value: _selectedPaymentMethod,
-                                onChanged: (value) {
-                                  setState(() {
-                                    _selectedPaymentMethod =
-                                        value as PaymentMethod;
-                                  });
-                                },
-                                hint: const Text(
-                                  "Formas de pagamento",
-                                  style: TextStyle(
-                                    color: Colors.grey,
-                                    fontSize: 16,
-                                  ),
-                                ),
-                                items: snapshot.data!.map((element) {
-                                  return DropdownMenuItem(
-                                    value: element,
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.start,
-                                      children: [
-                                        Icon(
-                                          IconData(element.icon!,
-                                              fontFamily: "MaterialIcons"),
-                                        ),
-                                        const SizedBox(width: 30),
-                                        Text(
-                                          element.name ?? "",
-                                          style: GoogleFonts.roboto(
-                                            color: Colors.black,
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.normal,
-                                          ),
-                                        ),
-                                      ],
+                            if (snapshot.connectionState ==
+                                    ConnectionState.done ||
+                                snapshot.hasData) {
+                              return DropdownButtonHideUnderline(
+                                child: DropdownButton2(
+                                  isExpanded: true,
+                                  value: _selectedPaymentMethod,
+                                  onChanged: (value) {
+                                    setState(() {
+                                      _selectedPaymentMethod =
+                                          value as PaymentMethod;
+                                    });
+                                  },
+                                  hint: const Text(
+                                    "Formas de pagamento",
+                                    style: TextStyle(
+                                      color: Colors.grey,
+                                      fontSize: 16,
                                     ),
-                                  );
-                                }).toList(),
-                              ),
-                            );
+                                  ),
+                                  items: snapshot.data!.map((element) {
+                                    return DropdownMenuItem(
+                                      value: element,
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.start,
+                                        children: [
+                                          Icon(
+                                            IconData(element.icon!,
+                                                fontFamily: "MaterialIcons"),
+                                          ),
+                                          const SizedBox(width: 30),
+                                          Text(
+                                            element.name ?? "",
+                                            style: GoogleFonts.roboto(
+                                              color: Colors.black,
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.normal,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    );
+                                  }).toList(),
+                                ),
+                              );
+                            }
+                            return CircularProgressIndicator();
                           }),
                     ),
                     TextFormField(
@@ -248,18 +258,18 @@ class _AddExpenseState extends State<AddExpense> {
 
                   await expenseController
                       .addExpense(Expense(
-                        name: _nameController.value.text,
-                        description: _descriptionController.value.text,
-                        value: date!.isBefore(now) || date.isAtSameMomentAs(now)
-                            ? double.tryParse(_valueController.value.text)
-                            : -1,
-                        budget: date.isAfter(now)
-                            ? double.tryParse(_valueController.value.text)
-                            : -1,
-                        date: date,
-                        category: _selectedCategory,
-                        paymentMethod: _selectedPaymentMethod
-                      ))
+                          name: _nameController.value.text,
+                          description: _descriptionController.value.text,
+                          value:
+                              date!.isBefore(now) || date.isAtSameMomentAs(now)
+                                  ? double.tryParse(_valueController.value.text)
+                                  : -1,
+                          budget: date.isAfter(now)
+                              ? double.tryParse(_valueController.value.text)
+                              : -1,
+                          date: date,
+                          category: _selectedCategory,
+                          paymentMethod: _selectedPaymentMethod))
                       .then(
                         (value) => Navigator.of(context).pop(),
                       );

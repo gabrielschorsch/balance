@@ -9,8 +9,16 @@ class PaymentMethodRepository implements IPaymentMethodRepository {
 
   @override
   Future<int> addPaymentMethod(PaymentMethod paymentMethod) async {
+    //check if entry already exists
+
     var post = paymentMethod.toMap();
     var userId = FirebaseAuth.instance.currentUser!.uid;
+    var exists = await db.collection(collection).where((e) => e.id == userId && e.name == paymentMethod.name).get();
+
+    if (exists.size > 0) {
+      return Future.value(0);
+    }
+
     post.addEntries(
       [
         MapEntry("userId", userId),
