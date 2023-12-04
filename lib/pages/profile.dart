@@ -1,8 +1,10 @@
 import 'dart:io';
 
+import 'package:app/controllers/auth_controller.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:provider/provider.dart';
 
 class Profile extends StatefulWidget {
   const Profile({super.key});
@@ -15,10 +17,10 @@ class _ProfileState extends State<Profile> {
   XFile? image;
 
   ImageProvider get userImage {
-    if (image != null) {
-      return FileImage(File(image!.path));
-    } else if (FirebaseAuth.instance.currentUser!.photoURL != null) {
+    if (FirebaseAuth.instance.currentUser!.photoURL != null) {
       return NetworkImage(FirebaseAuth.instance.currentUser!.photoURL!);
+    } else if (image != null) {
+      return FileImage(File(image!.path));
     } else {
       return const NetworkImage(
           "https://static.vecteezy.com/system/resources/previews/020/911/740/original/user-profile-icon-profile-avatar-user-icon-male-icon-face-icon-profile-icon-free-png.png");
@@ -105,12 +107,10 @@ class _ProfileState extends State<Profile> {
                       XFile selectedImage = await ImagePicker().pickImage(
                         source: ImageSource.gallery,
                       ) as XFile;
-                      FirebaseAuth.instance.currentUser!
-                          .updatePhotoURL(selectedImage.path);
-                      setState(() {
-                        image = selectedImage;
-                      });
-                      Navigator.of(context).pop();
+                      await context
+                          .read<AuthController>()
+                          .updateProfilePicture(File(selectedImage.path));
+                      setState(() {});
                     },
                   ),
                   const Padding(padding: EdgeInsets.all(8.0)),
@@ -120,12 +120,11 @@ class _ProfileState extends State<Profile> {
                       XFile photo = await ImagePicker().pickImage(
                         source: ImageSource.camera,
                       ) as XFile;
-                      FirebaseAuth.instance.currentUser!
-                          .updatePhotoURL(photo.path);
 
-                      setState(() {
-                        image = photo;
-                      });
+                      await context
+                          .read<AuthController>()
+                          .updateProfilePicture(File(photo.path));
+                      setState(() {});
                       Navigator.of(context).pop();
                     },
                   ),
