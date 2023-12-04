@@ -2,6 +2,7 @@ import 'package:app/controllers/expense_controller.dart';
 import 'package:app/domains/expense.dart';
 import 'package:app/pages/add_category.dart';
 import 'package:app/pages/add_payment_method.dart';
+import 'package:app/pages/profile.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -31,12 +32,44 @@ class _StartingPageState extends State<StartingPage> {
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      "Olá, ${FirebaseAuth.instance.currentUser!.displayName}",
-                      style: Theme.of(context)
-                          .textTheme
-                          .titleMedium!
-                          .copyWith(color: Colors.white),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      mainAxisSize: MainAxisSize.max,
+                      children: [
+                        Text(
+                          "Olá, ${FirebaseAuth.instance.currentUser!.displayName}",
+                          style: Theme.of(context)
+                              .textTheme
+                              .titleMedium!
+                              .copyWith(color: Colors.white),
+                        ),
+                        SizedBox(width: 100 - 63),
+                        IconButton(
+                          onPressed: () {
+                            FirebaseAuth.instance.signOut();
+                          },
+                          icon: const Icon(
+                            Icons.logout,
+                            color: Colors.white,
+                          ),
+                        ),
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (context) => const Profile(),
+                                fullscreenDialog: true,
+                              ),
+                            );
+                          },
+                          child: CircleAvatar(
+                            backgroundImage: NetworkImage(
+                              FirebaseAuth.instance.currentUser!.photoURL ??
+                                  "https://static.vecteezy.com/system/resources/previews/020/911/740/original/user-profile-icon-profile-avatar-user-icon-male-icon-face-icon-profile-icon-free-png.png",
+                            ),
+                          ),
+                        )
+                      ],
                     ),
                     ValueContainer(
                       title: "Este mês você gastou:",
